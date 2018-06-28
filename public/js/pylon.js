@@ -321,7 +321,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			break;
 		case 2:
 			//该模块n1默认是3
-			if(empty(n1)){
+			if(n1 == 'undefined'){
 				n1 = 3;
 			}
 			
@@ -354,9 +354,15 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 				}
 				
 				
-				vertices.push(new THREE.Vector3(x1,y1,z1));
-				if(i != n1){
+				if(n1%2 == 0){
+					
 					vertices.push(new THREE.Vector3(x2,y2,z2));
+					vertices.push(new THREE.Vector3(x1,y1,z1));
+				}else{
+					vertices.push(new THREE.Vector3(x1,y1,z1));
+					if(i != n1){
+						vertices.push(new THREE.Vector3(x2,y2,z2));
+					}
 				}
 				
 			}
@@ -366,7 +372,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			po.push(vertices[vertices.length-2]);
 			
 			temp = get_relative(vertices,z);
-			console.log(temp);
+			
 			
 			po.push(temp[temp.length-1]);
 			vertices = vertices.concat(temp.reverse());
@@ -382,6 +388,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			
 			var vertices1 = [];
 			//第二个面
+
 			vertices1.push(point[1]);
 			for(i=1;i<=n1;i++){
 				x1 = l2/2-x_l2*(i/n1)
@@ -398,20 +405,34 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 					z2 = (l3/2-z_l1)/2;
 				}
 				
-				vertices1.push(new THREE.Vector3(x1,y1,z1));
-				if(i != n1){
+				if(n1%2 == 0){
+					
 					vertices1.push(new THREE.Vector3(x2,y2,z2));
-				}	
+					vertices1.push(new THREE.Vector3(x1,y1,z1));
+				}else{
+					vertices1.push(new THREE.Vector3(x1,y1,z1));
+					if(i != n1){
+						vertices1.push(new THREE.Vector3(x2,y2,z2));
+					}
+				}
+				
+				//vertices1.push(new THREE.Vector3(x1,y1,z1));
+				//if(i != n1){
+				//	vertices1.push(new THREE.Vector3(x2,y2,z2));
+				//}	
 			}
 			vertices1.push(new THREE.Vector3(xo1,yo1,zo1));
+			
 			temp = get_relative(vertices1,x);
 			
 			po.push(temp[temp.length-1]);
 			po.push(new THREE.Vector3(-l3/2,h_p+h,-l2/2));
 			vertices1 = vertices1.concat(temp.reverse());
 			//获得第三个面
+			
 			var vertices2 =  get_relative(vertices,x).reverse();
 			//获得第四个面
+			
 			var vertices3 =  get_relative(vertices1,z).reverse();
 			
 			vertices = vertices.concat(vertices1);
@@ -419,14 +440,22 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			vertices = vertices.concat(vertices3);
 			
 			
-			
+			console.log(vertices);
 			for(j=0;j<vertices.length-2;j++){
-				if(vertices[j+1].x != 0 && vertices[j+1].y != 0 && vertices[j+1].z != 0){
+				if(vertices[j+1].x != 0 && vertices[j+1].y != 0 && vertices[j+1].z != 0 && j != 2*(n1+3) && j != 4*(n1+3) && j != 6*(n1+3)){
 					faces.push(new THREE.Face3(j,j+1,j+2));
 				}
-				if(vertices[j].x != 0 && vertices[j].y != 0 && vertices[j].z != 0){
-					//faces.push(new THREE.Face3(j,j-1,j-6));
-					//faces.push(new THREE.Face3(j,j+1,j+6));
+				
+			
+				if(vertices[j].x == 0 || vertices[j].z == 0){
+		
+					if(j-(n1+3)>=0){
+					
+						faces.push(new THREE.Face3(j,j-1,j-(n1+3)));
+					}
+					if(vertices[j+(n1+3)]){
+						faces.push(new THREE.Face3(j,j+1,j+(n1+3)));
+					}
 				}
 			}
 			
@@ -516,7 +545,7 @@ function tabula1(point,type) {
             //因为索引是从0开始的所以要减去1
             var len = vertices.length-1;
             var len1 = point.length-1;
-            console.log(len-len1,len,len-len1+1);
+            
             faces.push(new THREE.Face3(len-len1,len,len-len1+1));
             faces.push(new THREE.Face3(len,len-len1,len-len1+2));
             break;
