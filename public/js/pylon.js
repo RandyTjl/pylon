@@ -439,8 +439,6 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			vertices = vertices.concat(vertices2);
 			vertices = vertices.concat(vertices3);
 			
-			
-			console.log(vertices);
 			for(j=0;j<vertices.length-2;j++){
 				if(vertices[j+1].x != 0 && vertices[j+1].y != 0 && vertices[j+1].z != 0 && j != 2*(n1+3) && j != 4*(n1+3) && j != 6*(n1+3)){
 					faces.push(new THREE.Face3(j,j+1,j+2));
@@ -463,7 +461,6 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 
     }
 
-	
 	return [vertices,faces,po];
 }
 
@@ -473,44 +470,56 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
  * @param h_p 前面所有模块高度
  * @param h 该模块高度
  * @param l 该模块地底边长度
- * @param n1 该模块分成几块
+ * @param n 该模块分成几块
  * @param radian 该模块的倾斜角
  * @param type 哪种头模型
  * @param direction  该头部模块方向(x,-x,z,-z)四个方向
  
 **/
 
-function pylon_head(point1,point2,h_p,h,l,n1,radian,type,direction){
+function pylon_head(point1,point2,h_p,h,l,n,radian,type,direction){
 	var vertices = [];
 	var faces = [];
+	//最右边的点
+	var vertices_right = [];
 	//塔身底边长度
 	var l2 = 2*Math.abs(point2[0].x);
 	//塔身上边长度
 	var l3 = 2*Math.abs(point1[0].x);
+	//塔身侧边底边长度
+	var l4 = 2*Math.abs(point2[0].z);
 	switch(type){
 		case 1:
 			if(direction == 'x'){
 				vertices.push(point1[1]);
 				vertices.push(point2[1]);
+
+				vertices_right.push(new THREE.Vector3(point2[1].x+l,point2[1].y,point2[1].z));
 			}else if(direction == '-x'){
 				vertices.push(point1[2]);
 				vertices.push(point2[2]);
+				
+				vertices_right.push(new THREE.Vector3(point2[2].x-l,point2[2].y,point2[2].z));
 			}else if(direction == 'z'){
 				vertices.push(point1[0]);
 				vertices.push(point2[0]);
+				
+				vertices_right.push(new THREE.Vector3(point2[0].x,point2[0].y,point2[0].z+l));
 			}else if(direction == '-z'){
 				vertices.push(point1[3]);
 				vertices.push(point2[3]);
+				vertices_right.push(new THREE.Vector3(point2[3].x,point2[3].y,point2[0].z-l));	
 			}
 			
-			for(i=0;i<n1;i++){
-				x1 = l2/2+l*i/(2*n);
+			for(i=1;i<n;i++){
+				x1 = l2/2+l*((i-1)/n+1/(2*n));
 				y1 = h_p+h*(1-i/(2*n));
-				z1 = h*(1-i/(2*n))/Math.tan(radian);
+				console.log(1-i/(2*n));
+				z1 = l4/2-h*(1-i/(2*n))/Math.tan(radian);
 				
-				x2 = l2/2 + l*(i+1)/(2*n);
+				x2 = l2/2 + l*(i/n);
 				y2 = h_p;
-				z2 = Math.abs(point1[0].z);
+				z2 = Math.abs(point2[0].z);
 				if(direction == '-x'){
 					x1 = -x1;
 					x2 = -x2;
@@ -519,10 +528,14 @@ function pylon_head(point1,point2,h_p,h,l,n1,radian,type,direction){
 					z1 = -z1;
 					z2 = -z2;
 				}
-				vertices.push(new Three.vertices(x1,y1,z1));
-				vertices.push(new Three.vertices(x2,y2,z2));
+				vertices.push(new THREE.Vector3(x1,y1,z1));
+				vertices.push(new THREE.Vector3(x2,y2,z2));
 			}
+			//添加最右边的点
+			vertices = vertices.concat(vertices_right);
+			
 			var vertices1 = get_relative_all(vertices,direction);
+			//vertices =vertices.concat(vertices1);
 			for(j=0;j<vertices.length-2;j++){
 				faces.push(new THREE.Face3(j,j+1,j+2));
 			}
@@ -530,8 +543,10 @@ function pylon_head(point1,point2,h_p,h,l,n1,radian,type,direction){
 		case 2:
 			break;
 	}
+	console.log(vertices);
+	console.log(faces);
 	
-	
+	return [vertices,faces];	
 }
 
 

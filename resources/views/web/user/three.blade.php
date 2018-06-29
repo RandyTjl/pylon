@@ -36,9 +36,9 @@
             function initCamera() {
                 camera = new THREE.PerspectiveCamera(70, width / height, 1, 10000);
 				//camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 10, 1000  )
-                camera.position.x = 200;
+                camera.position.x = 0;
                 camera.position.y = 250;
-                camera.position.z = 0;
+                camera.position.z = 200;
                 camera.up.x = 0;
                 camera.up.y = 1;
                 camera.up.z = 0;
@@ -96,9 +96,13 @@
 				
 				var cubeGeometry2 = new THREE.Geometry();
 				var body2 = pylon_body(l1,body1[2],h+40,30,3,radian,2);
-			
 				cubeGeometry2.vertices = body2[0];
 				cubeGeometry2.faces = body2[1];
+				//头部
+				var cubeGeometry3 = new THREE.Geometry();
+				var head1 = pylon_head(body2[2],body1[2],h+40,30,40,2,radian,1,'x');
+				cubeGeometry3.vertices = head1[0];
+				cubeGeometry3.faces = head1[1];
                 
 
 
@@ -111,6 +115,8 @@
 				mesh2 = new THREE.Mesh(cubeGeometry1,material);
 				
 				mesh3 = new THREE.Mesh(cubeGeometry2,material);
+				
+				head1 = new THREE.Mesh(cubeGeometry3,material);
 
                 //mesh.position.set(100,0,0);
                 //mesh.rotateY(Math.PI);
@@ -125,7 +131,8 @@
 				//scene.add( mesh );
                 //scene.add( mesh1);
 				//scene.add( mesh2 );
-				scene.add( mesh3 );
+				//scene.add( mesh3 );
+				scene.add(head1);
 
 
             }
@@ -145,7 +152,7 @@
 				//renderer.clear();
 				//camera.position.y =camera.position.y +1;
                 //mesh.rotation.y +=0.01;
-				cameraRotate();
+				//cameraRotate();
 			
                 renderer.render(scene, camera);
                 requestAnimationFrame(animation);
