@@ -39,7 +39,7 @@ function pylon_bottom(h1,l1,l2,l3,n1,radian) {
         vertices.push(new THREE.Vector3(x1,y1,z));
         vertices.push(new THREE.Vector3(x2,y2,z));
     }
-    temp = get_relative(vertices,z);
+    temp = get_relative(vertices,'z');
     vertices = vertices.concat(temp.reverse());
 
     //第二个面
@@ -56,12 +56,12 @@ function pylon_bottom(h1,l1,l2,l3,n1,radian) {
         vertices1.push(new THREE.Vector3(x,y1,z2));
     }
 
-    temp = get_relative(vertices1,x);
+    temp = get_relative(vertices1,'x');
     vertices1 = vertices1.concat(temp.reverse());
     //获得第三个面
-    var vertices2 =  get_relative(vertices,x).reverse();
+    var vertices2 =  get_relative(vertices,'x').reverse();
     //获得第四个面
-    var vertices3 =  get_relative(vertices1,z).reverse();
+    var vertices3 =  get_relative(vertices1,'z').reverse();
 
     vertices = vertices.concat(vertices1);
     vertices = vertices.concat(vertices2);
@@ -90,9 +90,9 @@ function get_relative(vertices,xyz) {
         x1 = vertices[i].x;
         y1 = vertices[i].y;
         z1 = vertices[i].z;
-        if(xyz == x){
+        if(xyz == 'x'){
             z1 = -z1;
-        }else if(xyz == z){
+        }else if(xyz == 'z'){
             x1 = - x1;
         }
         temp.push(new THREE.Vector3(x1,y1,z1));
@@ -111,9 +111,9 @@ function get_relative_all(vertices,xyz) {
         x1 = vertices[i].x;
         y1 = vertices[i].y;
         z1 = vertices[i].z;
-        if(xyz == x){
+        if(xyz == 'x'){
             z1 = -z1;
-        }else if(xyz == z){
+        }else if(xyz == 'z'){
             x1 = - x1;
         }
         temp.push(new THREE.Vector3(x1,y1,z1));
@@ -278,7 +278,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			vertices = vertices.reverse();
 			
 			po.push(vertices[0]);
-			temp = get_relative(vertices,z);
+			temp = get_relative(vertices,'z');
 			po.push(temp[0]);
 			vertices = vertices.concat(temp.reverse());
 			//计算缺失部分的长度
@@ -302,13 +302,13 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			}
 			vertices1 = vertices1.reverse();
 			po.push(vertices1[0]);
-			temp = get_relative(vertices1,x);
+			temp = get_relative(vertices1,'x');
 			po.push(temp[0]);
 			vertices1 = vertices1.concat(temp.reverse())
 			//获得第三个面
-			var vertices2 =  get_relative(vertices,x).reverse();
+			var vertices2 =  get_relative(vertices,'x').reverse();
 			//获得第四个面
-			var vertices3 =  get_relative(vertices1,z).reverse();
+			var vertices3 =  get_relative(vertices1,'z').reverse();
 			
 			
 			vertices = vertices.concat(vertices1);
@@ -371,7 +371,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			//获取顶点坐标
 			po.push(vertices[vertices.length-2]);
 			
-			temp = get_relative(vertices,z);
+			temp = get_relative(vertices,'z');
 			
 			
 			po.push(temp[temp.length-1]);
@@ -423,17 +423,17 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			}
 			vertices1.push(new THREE.Vector3(xo1,yo1,zo1));
 			
-			temp = get_relative(vertices1,x);
+			temp = get_relative(vertices1,'x');
 			
 			po.push(temp[temp.length-1]);
 			po.push(new THREE.Vector3(-l3/2,h_p+h,-l2/2));
 			vertices1 = vertices1.concat(temp.reverse());
 			//获得第三个面
 			
-			var vertices2 =  get_relative(vertices,x).reverse();
+			var vertices2 =  get_relative(vertices,'x').reverse();
 			//获得第四个面
 			
-			var vertices3 =  get_relative(vertices1,z).reverse();
+			var vertices3 =  get_relative(vertices1,'z').reverse();
 			
 			vertices = vertices.concat(vertices1);
 			vertices = vertices.concat(vertices2);
@@ -525,7 +525,7 @@ function pylon_head(point1,point2,h_p,h,l,n,radian,type,other_type,direction){
 			for(i=1;i<n;i++){
 				x1 = l2/2+l*((i-1)/n+1/(2*n));
 				y1 = h_p+h*(1-i/(2*n));
-				console.log(1-i/(2*n));
+				
 				z1 = l4/2-h*(1-i/(2*n))/Math.tan(radian);
 				
 				x2 = l2/2 + l*(i/n);
@@ -547,15 +547,16 @@ function pylon_head(point1,point2,h_p,h,l,n,radian,type,other_type,direction){
 			var len1 = vertices.length;
 			
 			var vertices1 = get_relative_all(vertices,direction);
-			vertices =vertices.concat(vertices1);
+		
+			vertices = vertices.concat(vertices1);
 			for(j=0;j<vertices.length-2;j++){
 				if(!(j == len1-1 || j == len1-2 || j == 2*len1-1 || j == 2*len1 -2) ){
 					faces.push(new THREE.Face3(j,j+1,j+2));
 				}	
 			}
-			for(j1=0;j1<len1;j1++){
+			/* for(j1=0;j1<len1;j1++){
 				faces.push(new THREE.Face3(j,len1,j1));
-			}
+			} */
 			
 			break;
 		case 2:
@@ -622,7 +623,7 @@ function pylon_head_other(vertices,l1,l2,type){
 			var h1 = vertices[len-2].y;
 			var h2 = vertices[len].y;
 			var x1 = vertices[len].x+l1;
-			var x2 - vertices[len].x+l2;
+			var x2 = vertices[len].x+l2;
 			var z1 = vertices[len-2].z;
 			var z2 = vertices[len].z;
 			vertices.push =	new THREE.Vector3(x1,h1,z1);
