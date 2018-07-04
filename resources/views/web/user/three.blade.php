@@ -37,7 +37,7 @@
                 camera = new THREE.PerspectiveCamera(70, width / height, 1, 10000);
 				//camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 10, 1000  )
                 camera.position.x = 0;
-                camera.position.y = 250;
+                camera.position.y = 200;
                 camera.position.z = 200;
                 camera.up.x = 0;
                 camera.up.y = 1;
@@ -94,15 +94,29 @@
 				cubeGeometry1.vertices = body1[0];
 				cubeGeometry1.faces = body1[1];
 				
+				h1 = h+40;
 				var cubeGeometry2 = new THREE.Geometry();
-				var body2 = pylon_body(l1,body1[2],h+40,30,3,radian,2);
+				var body2 = pylon_body(l1,body1[2],h1,30,3,radian,2);
 				cubeGeometry2.vertices = body2[0];
 				cubeGeometry2.faces = body2[1];
 				//头部
 				var cubeGeometry3 = new THREE.Geometry();
-				var head1 = pylon_head(body2[2],body1[2],h+40,30,40,2,radian,1,1,'x');
+				var head1 = pylon_head(body2[2],body1[2],h1,30,40,4,radian,2,1,'x');
 				cubeGeometry3.vertices = head1[0];
 				cubeGeometry3.faces = head1[1];
+				
+				h2 = h1 + 30;
+				var cubeGeometry4 = new THREE.Geometry();
+				var body3 = pylon_body(l1,body2[2],h2,30,1,radian,2);
+				cubeGeometry4.vertices = body3[0];
+				cubeGeometry4.faces = body3[1];
+				
+				//头部配件
+				var cubeGeometry5 = new THREE.Geometry();
+				var head2 = pylon_head_other(head1[2],10,20,3,'x');
+				cubeGeometry5.vertices = head2[0];
+				cubeGeometry5.faces = head2[1];
+				
                 
 
 
@@ -117,6 +131,9 @@
 				mesh3 = new THREE.Mesh(cubeGeometry2,material);
 				
 				head1 = new THREE.Mesh(cubeGeometry3,material);
+				mesh4 = new THREE.Mesh(cubeGeometry4,material);
+				head2 = new THREE.Mesh(cubeGeometry5,material);
+				
 
                 //mesh.position.set(100,0,0);
                 //mesh.rotateY(Math.PI);
@@ -128,12 +145,13 @@
                 //dummy.rotation.y=Math.PI;
                 dummy.rotateOnAxis(new THREE.Vector3(0,1,0),Math.PI)*/
 				
-				//scene.add( mesh );
-                //scene.add( mesh1);
-				//scene.add( mesh2 );
-				//scene.add( mesh3 );
-				scene.add(head1);
-
+				// scene.add( mesh );
+                // scene.add( mesh1);
+				// scene.add( mesh2 );
+				// scene.add( mesh3 );
+				// scene.add(head1);
+				scene.add(head2);
+				//scene.add(mesh4);
 
             }
 

@@ -111,9 +111,9 @@ function get_relative_all(vertices,xyz) {
         x1 = vertices[i].x;
         y1 = vertices[i].y;
         z1 = vertices[i].z;
-        if(xyz == 'x'){
+        if(xyz == 'x' || xyz == '-x'){
             z1 = -z1;
-        }else if(xyz == 'z'){
+        }else if(xyz == 'z' || xyz == '-z'){
             x1 = - x1;
         }
         temp.push(new THREE.Vector3(x1,y1,z1));
@@ -259,7 +259,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 
 	
     switch(type){
-        case 1:
+		case 1://最底边的塔身长度
 			for(i=0;i<=n1;i++){
 				x1 = -l2/2 + x_l2*(i/n1);
 				y1 = h_p+h*(i/n1);
@@ -319,12 +319,12 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 				faces.push(new THREE.Face3(j,j+1,j+2));
 			}
 			break;
-		case 2:
+		case 2: //通过n1形成第二种塔身
 			//该模块n1默认是3
-			if(n1 == 'undefined'){
+			if(n1 == undefined){
 				n1 = 3;
 			}
-			
+	
 			//右边分块
 			n_left = 4;
 			
@@ -481,52 +481,49 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 function pylon_head(point1,point2,h_p,h,l,n,radian,type,other_type,direction){
 	var vertices = [];
 	var faces = [];
+	var vertices_first = [];//第一个面用于生成头部的其他部分
 	//最右边的点
 	var vertices_right = [];
 	//塔身底边长度
 	var l2 = 2*Math.abs(point2[0].x);
+
 	//塔身上边长度
 	var l3 = 2*Math.abs(point1[0].x);
 	//塔身侧边底边长度
 	var l4 = 2*Math.abs(point2[0].z);
+	var x_l1 = (l2-l3)/2;
 	
 	if(direction == 'x'){
 		vertices.push(point1[1]);
 		vertices.push(point2[1]);
-
-		vertices_right.push(new THREE.Vector3(point2[1].x+l,point2[1].y,point2[1].z));
 	}else if(direction == '-x'){
-		vertices.push(point1[2]);
-		vertices.push(point2[2]);
-		
-		vertices_right.push(new THREE.Vector3(point2[2].x-l,point2[2].y,point2[2].z));
-	}else if(direction == 'z'){
 		vertices.push(point1[0]);
 		vertices.push(point2[0]);
-		
-		vertices_right.push(new THREE.Vector3(point2[0].x,point2[0].y,point2[0].z+l));
+	}else if(direction == 'z'){
+		vertices.push(point1[0]);
+		vertices.push(point2[0]);	
 	}else if(direction == '-z'){
 		vertices.push(point1[3]);
-		vertices.push(point2[3]);
-		vertices_right.push(new THREE.Vector3(point2[3].x,point2[3].y,point2[0].z-l));	
+		vertices.push(point2[3]);	
 	}
 	switch(type){
 		case 1:
 			if(direction == 'x'){
 				vertices_right.push(new THREE.Vector3(point2[1].x+l,point2[1].y,point2[1].z));
 			}else if(direction == '-x'){
-				vertices_right.push(new THREE.Vector3(point2[2].x-l,point2[2].y,point2[2].z));
+				vertices_right.push(new THREE.Vector3(point2[0].x-l,point2[0].y,point2[0].z));
 			}else if(direction == 'z'){
 				vertices_right.push(new THREE.Vector3(point2[0].x,point2[0].y,point2[0].z+l));
 			}else if(direction == '-z'){
-				vertices_right.push(new THREE.Vector3(point2[3].x,point2[3].y,point2[0].z-l));	
+				vertices_right.push(new THREE.Vector3(point2[3].x,point2[3].y,point2[3].z-l));	
 			}
 			
 			for(i=1;i<n;i++){
-				x1 = l2/2+l*((i-1)/n+1/(2*n));
-				y1 = h_p+h*(1-i/(2*n));
+				x_l2 = l*((i-1)/n+1/(2*n));
+				x1 = l2/2+x_l2;
+				y1 = h_p+h*((l-x_l2)/(l+x_l1));
 				
-				z1 = l4/2-h*(1-i/(2*n))/Math.tan(radian);
+				z1 = l4/2-h*((l-x_l2)/(l+x_l1))/Math.tan(radian);
 				
 				x2 = l2/2 + l*(i/n);
 				y2 = h_p;
@@ -544,40 +541,52 @@ function pylon_head(point1,point2,h_p,h,l,n,radian,type,other_type,direction){
 			}
 			//添加最右边的点
 			vertices = vertices.concat(vertices_right);
+			vertices_first = vertices;
+		
+			
 			var len1 = vertices.length;
 			
 			var vertices1 = get_relative_all(vertices,direction);
 		
 			vertices = vertices.concat(vertices1);
+			
 			for(j=0;j<vertices.length-2;j++){
 				if(!(j == len1-1 || j == len1-2 || j == 2*len1-1 || j == 2*len1 -2) ){
 					faces.push(new THREE.Face3(j,j+1,j+2));
 				}	
 			}
-			/* for(j1=0;j1<len1;j1++){
-				faces.push(new THREE.Face3(j,len1,j1));
-			} */
+			for(j1=0;j1<len1;j1++){
+				faces.push(new THREE.Face3(j1,len1+j1,j1));
+			} 
 			
 			break;
 		case 2:
+			if(n<3){
+				n = 3;
+			}
+			vertices.reverse();
+			//计算下边长度
+			l_d = l-(l2-l3)/2
 			if(direction == 'x'){
 				vertices_right.push(new THREE.Vector3(point1[1].x+l,point1[1].y,point1[1].z));
 			}else if(direction == '-x'){
-				vertices_right.push(new THREE.Vector3(point1[2].x-l,point1[2].y,point1[2].z));
+				vertices_right.push(new THREE.Vector3(point1[0].x-l,point1[0].y,point1[0].z));
 			}else if(direction == 'z'){
 				vertices_right.push(new THREE.Vector3(point1[0].x,point1[0].y,point1[0].z+l));
 			}else if(direction == '-z'){
-				vertices_right.push(new THREE.Vector3(point1[3].x,point1[3].y,point1[0].z-l));	
+				vertices_right.push(new THREE.Vector3(point1[3].x,point1[3].y,point1[3].z-l));	
 			}
 			
 			for(i=1;i<n;i++){
-				x1 = l2/2+l*((i-1)/n+1/(2*n));
-				y1 = h_p+h*(i/(2*n));
-				z1 = l4/2-h*(i/(2*n))/Math.tan(radian);
+				x1 = l2/2 + l_d*((i-1)/n+1/(2*n));
+				y1 = h_p+h*((i-1)/n+1/(2*n));
+				z1 = l4/2 - h*((i-1)/n+1/(2*n))/Math.tan(radian);
 				
-				x2 = l2/2 + l*(i/n);
+				x2 = l2/2 + l_d*(i/n);
 				y2 = h_p+h;
-				z2 = Math.abs(point2[0].z);
+				z2 = Math.abs(point1[0].z);
+				
+		
 				if(direction == '-x'){
 					x1 = -x1;
 					x2 = -x2;
@@ -591,23 +600,41 @@ function pylon_head(point1,point2,h_p,h,l,n,radian,type,other_type,direction){
 			}
 			//添加最右边的点
 			vertices = vertices.concat(vertices_right);
+			vertices_first = vertices;
+		
+		
 			
+			var len1 = vertices.length;
+			
+			var vertices1 = get_relative_all(vertices,direction);
+		
+			vertices = vertices.concat(vertices1);
+			
+			for(j=0;j<vertices.length-2;j++){
+				if(!(j == len1-1 || j == len1-2 || j == 2*len1-1 || j == 2*len1 -2) ){
+					faces.push(new THREE.Face3(j,j+1,j+2));
+				}	
+			}
+			for(j1=0;j1<len1;j1++){
+				faces.push(new THREE.Face3(j1,len1+j1,j1));
+			} 
 			break;
 	}
-	console.log(vertices);
-	console.log(faces);
 	
-	return [vertices,faces];	
+	
+	return [vertices,faces,vertices_first];	
 }
 
 /**
  *vertices 头部第一部分
  *l1 底边1的长度
- *l2 底边2的长度
+ *l2 底边2的长度 l2必须大于l1
  *type 类型
 **/
-function pylon_head_other(vertices,l1,l2,type){
-	var len = vertices.length;
+function pylon_head_other(vertices,l1,l2,type,direction){
+	var len = vertices.length-1;
+	var temp = [];
+	var faces = [];
 	switch(type){
 		case 1: 
 			var h1 = vertices[len-2].y;
@@ -615,25 +642,79 @@ function pylon_head_other(vertices,l1,l2,type){
 			var x = vertices[len].x+l1
 			var z1 = vertices[len-2].z;
 			var z2 = vertices[len].z;
+			temp.push(vertices[len-2]);
+			temp.push(vertices[len]);
 			
-			vertices.push =	new THREE.Vector3(x,h1,z1);
-			vertices.push =	new THREE.Vector3(x,h2,z2);
+			temp.push(new THREE.Vector3(x,h1,z1));
+			temp.push(new THREE.Vector3(x,h2,z2));
 			break;
 		case 2:
+			if(l2 == ''){
+				l2 = 10;
+			}
 			var h1 = vertices[len-2].y;
 			var h2 = vertices[len].y;
 			var x1 = vertices[len].x+l1;
 			var x2 = vertices[len].x+l2;
 			var z1 = vertices[len-2].z;
 			var z2 = vertices[len].z;
-			vertices.push =	new THREE.Vector3(x1,h1,z1);
-			vertices.push =	new THREE.Vector3(x1,h2,z2);
-			vertices.push =	new THREE.Vector3(x2,h2,z2);
+			temp.push(vertices[len-2]);
+			temp.push(vertices[len]);
+			
+			temp.push(new THREE.Vector3(x1,h1,z1));
+			temp.push(new THREE.Vector3(x1,h2,z2));
+			temp.push(new THREE.Vector3(x2,h2,z2));
 		
 			break;
+		case 3:
+			
+			var n = 3;
+			var h1 = vertices[len-2].y;
+			var h2 = vertices[len].y;
+			var x1 = vertices[len-2].x;
+			var x2 = vertices[len].x
+			var z1 = vertices[len-2].z;
+			var z2 = vertices[len].z;
+			temp.push(vertices[len-2]);
+			for(var i=1;i<=n;i++){
+				if(i==1){
+					x_t = l2*((i-1)/n)+x2;
+				}else{
+					x_t = l2*(i/n)+x2;
+				}
+				
+				y_t = h2;
+				z_t = z2;
+				
+				x_b = l2*(i/n)+x2;
+				y_b = h1;
+				z_b = z1;
+				temp.push(new THREE.Vector3(x_t,y_t,z_t));
+				temp.push(new THREE.Vector3(x_b,y_b,z_b));
+				
+			}
+			
+			faces.push(new THREE.Face3(temp.length-4,temp.length-3,temp.length-1));
+			
+			break;
 	}
+	var len1 = temp.length;
+	var temp1 = get_relative_all(temp,direction);
+	temp = temp.concat(temp1);
+
 	
-	return vertices;
+	for(j=0;j<temp.length-2;j++){
+		if(!(j == len1-1 || j == len1-2 || j == 2*len1-1 || j == 2*len1 -2) ){
+			faces.push(new THREE.Face3(j,j+1,j+2));
+		}
+
+	}
+	//两个模型连线
+	for(j1=0;j1<len1;j1++){
+		faces.push(new THREE.Face3(j1,len1+j1,j1));
+	} 
+	
+	return [temp,faces];
 }
 
 
