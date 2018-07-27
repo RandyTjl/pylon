@@ -101,7 +101,7 @@ function get_relative(vertices,xyz) {
 }
 
 /**
- * 获得面的对称面坐标
+ * 获得面的对称面所有坐标
  * @param vertices
  * @param xyz 哪个轴
  */
@@ -478,7 +478,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
  
 **/
 
-function pylon_head(point1,point2,h_p,h,l,n,radian,type,other_type,direction){
+function pylon_head(point1,point2,h_p,h,l,n,radian,type,direction){
 	var vertices = [];
 	var faces = [];
 	var vertices_first = [];//第一个面用于生成头部的其他部分

@@ -101,10 +101,15 @@
 				cubeGeometry2.faces = body2[1];
 				//头部
 				var cubeGeometry3 = new THREE.Geometry();
-				var head1 = pylon_head(body2[2],body1[2],h1,30,40,4,radian,2,1,'x');
+				var head1 = pylon_head(body2[2],body1[2],h1,30,40,4,radian,2,'x');
 				cubeGeometry3.vertices = head1[0];
 				cubeGeometry3.faces = head1[1];
-				
+
+				var cubeGeometry3_1 = new THREE.Geometry();
+
+				cubeGeometry3_1.vertices = get_relative_all(head1[0],'z');
+				cubeGeometry3_1.faces = head1[1];
+
 				h2 = h1 + 30;
 				var cubeGeometry4 = new THREE.Geometry();
 				var body3 = pylon_body(l1,body2[2],h2,30,1,radian,2);
@@ -113,14 +118,14 @@
 				
 				//头部配件
 				var cubeGeometry5 = new THREE.Geometry();
-				var head2 = pylon_head_other(head1[2],10,20,3,'x');
+				var head2 = pylon_head_other(head1[2],10,20,1,'x');
 				cubeGeometry5.vertices = head2[0];
 				cubeGeometry5.faces = head2[1];
 				
                 
 
 
-                var material = new THREE.MeshBasicMaterial({color:0x00ae00,wireframe : true});
+                var material = new THREE.MeshBasicMaterial({color:0x00ae00,wireframe : true,skinning:true});
                 mesh = new THREE.Mesh( cubeGeometry,material );
 				
                 //mesh.rotateOnAxis(new THREE.Vector3(0,1,0),Math.PI);
@@ -131,6 +136,8 @@
 				mesh3 = new THREE.Mesh(cubeGeometry2,material);
 				
 				head1 = new THREE.Mesh(cubeGeometry3,material);
+				head1_relative = new THREE.Mesh(cubeGeometry3_1,material);
+
 				mesh4 = new THREE.Mesh(cubeGeometry4,material);
 				head2 = new THREE.Mesh(cubeGeometry5,material);
 				
@@ -145,13 +152,14 @@
                 //dummy.rotation.y=Math.PI;
                 dummy.rotateOnAxis(new THREE.Vector3(0,1,0),Math.PI)*/
 				
-				// scene.add( mesh );
-                // scene.add( mesh1);
-				// scene.add( mesh2 );
-				// scene.add( mesh3 );
-				// scene.add(head1);
+				scene.add( mesh );
+                scene.add( mesh1);
+                scene.add( mesh2 );
+				scene.add( mesh3 );
+                scene.add(head1);
+                scene.add(head1_relative);
 				scene.add(head2);
-				//scene.add(mesh4);
+				scene.add(mesh4);
 
             }
 
