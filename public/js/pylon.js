@@ -383,7 +383,7 @@ function pylon_body(l1,point,h_p,h,n1,radian,type) {
 			//侧面中心点坐标
 			ho1 = h*l3/(2*(l3-z_l1)) //新模块高度（由纸推导出的公式）
 			xo1 = l2/2-x_l2*(ho1/h);
-			yo1 = h_p+ho1
+			yo1 = h_p+ho1;
 			zo1 = 0;
 			
 			var vertices1 = [];
@@ -561,9 +561,9 @@ function pylon_head(point1,point2,h_p,h,l,n,radian,type,direction){
 			
 			break;
 		case 2:
-			if(n<3){
+			/*if(n<3){
 				n = 3;
-			}
+			}*/
 			vertices.reverse();
 			//计算下边长度
 			l_d = l-(l2-l3)/2

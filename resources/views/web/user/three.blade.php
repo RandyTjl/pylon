@@ -101,7 +101,7 @@
 				cubeGeometry2.faces = body2[1];
 				//头部
 				var cubeGeometry3 = new THREE.Geometry();
-				var head1 = pylon_head(body2[2],body1[2],h1,30,40,4,radian,2,'x');
+				var head1 = pylon_head(body2[2],body1[2],h1,30,40,1,radian,2,'x');
 				cubeGeometry3.vertices = head1[0];
 				cubeGeometry3.faces = head1[1];
 
